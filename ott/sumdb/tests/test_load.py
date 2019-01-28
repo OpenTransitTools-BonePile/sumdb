@@ -19,3 +19,15 @@ class TestLoad(unittest.TestCase, TestBase):
     def test_load_zipcar(self):
         c = True
         self.assertTrue(c)
+
+    def test_load_car2go(self):
+        c = True
+        self.assertTrue(c)
+
+    def test_load_reachnow(self):
+        c = True
+        self.assertTrue(c)
+
+    def test_load_biketown(self):
+        c = True
+        self.assertTrue(c)
