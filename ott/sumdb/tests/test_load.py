@@ -13,8 +13,8 @@ class TestLoad(unittest.TestCase, TestBase):
     DO_PG = False
 
     def setUp(self):
-        # self.db = self.load_pgsql() if self.DO_PG else self.load_sqlite()
-        pass
+        #import pdb; pdb.set_trace()
+        self.db = self.open_pgsql() if self.DO_PG else self.open_sqlite()
 
     def test_load_zipcar(self):
         c = True

@@ -3,7 +3,6 @@ from sqlalchemy.pool import QueuePool
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from ott.utils import db_utils
-from .base import Base
 
 import logging
 log = logging.getLogger(__file__)
@@ -26,6 +25,7 @@ class Database(object):
         self.is_geospatial = is_geospatial
 
     def create(self):
+        from .base import Base
         Base.metadata.drop_all(bind=self.engine)
         Base.metadata.create_all(bind=self.engine)
 
@@ -57,6 +57,7 @@ class Database(object):
 
     @is_geospatial.setter
     def is_geospatial(self, val):
+        from .base import Base
         self._is_geospatial = val
         Base.set_geometry(self._is_geospatial)
 
@@ -70,8 +71,9 @@ class Database(object):
         self._schema = val
         try:
             if self._schema and len(self._schema) > 0:
-                Base.set_schema(self._schema)
+                from .base import Base
                 from sqlalchemy.schema import CreateSchema
+                Base.set_schema(self._schema)
                 self.engine.execute(CreateSchema(self._schema))
         except Exception as e:
             log.info("NOTE: couldn't create schema {0} (schema might already exist)\n{1}".format(self._schema, e))

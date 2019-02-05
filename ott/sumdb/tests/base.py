@@ -3,6 +3,8 @@ try:
 except ImportError:
     import unittest
 
+from ott.utils import db_utils
+from ott.sumdb.model.database import Database
 
 import logging
 log = logging.getLogger(__name__)
@@ -12,6 +14,17 @@ class TestBase(object):
     db = None
     do_print = False
     sql_db_name = 'curr'
+
+    @classmethod
+    def open_sqlite(cls):
+        url = db_utils.make_temp_sqlite_db_uri(cls.sql_db_name)
+        cls.db = Database(url=url)
+        return cls.db
+
+    @classmethod
+    def open_pgsql(cls, url, schema="sum"):
+        cls.db = Database(url=url, schema=schema, is_geospatial=True)
+        return cls.db
 
     @classmethod
     def load_sqlite(cls):
@@ -26,7 +39,7 @@ class TestBase(object):
             #import pdb; pdb.set_trace()
             gtfs_file = get_test_file_uri('multi-date-feed.zip')
             url = util.make_temp_sqlite_db_uri(cls.sql_db_name)
-            cls.db = database_load(gtfs_file, url=url, current_tables=True)
+            cls.db = database_load(gtfs_file, url=url)
         return cls.db
 
     @classmethod
@@ -47,7 +60,7 @@ class TestBase(object):
             url = "postgresql://ott@localhost/ott"
             schema = "current_test"
             gtfs_file = get_test_file_uri('multi-date-feed.zip')
-            cls.db = database_load(gtfs_file, url=url, schema=schema, is_geospatial=True, current_tables=True)
+            cls.db = database_load(gtfs_file, url=url, schema=schema, is_geospatial=True)
         return cls.db
 
     @classmethod

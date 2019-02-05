@@ -4,8 +4,8 @@ import sys
 
 oracle_extras = ['cx_oracle>=5.1']
 postgresql_extras = ['psycopg2>=2.4.2']
-# dev_extras = oracle_extras + postgresql_extras
 dev_extras = []
+
 
 extras_require = dict(
     dev=dev_extras,
@@ -13,11 +13,14 @@ extras_require = dict(
     postgresql=postgresql_extras,
 )
 
+
 install_requires = [
+    'ott.utils',
     'sqlalchemy',
     'geoalchemy2',
     'psycopg2',
 ]
+
 
 setup(
     name='ott.sumdb',
@@ -32,6 +35,9 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     extras_require=extras_require,
+    dependency_links=[
+        'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
+    ],
     entry_points={
         'console_scripts': [
             'ott.sumdb-load = ott.sumdb.scripts:ott.sumdb_load',
