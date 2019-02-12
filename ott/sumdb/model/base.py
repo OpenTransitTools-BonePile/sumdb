@@ -3,6 +3,11 @@ import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, DateTime
 
+try:
+    from urllib import urlretrieve  # Python 2
+except ImportError:
+    from urllib.request import urlretrieve  # Python 3
+
 import logging
 log = logging.getLogger(__file__)
 
@@ -14,6 +19,18 @@ class _Base(object):
     updated = Column(DateTime, default=datetime.datetime.now())
 
     lang = "en"
+
+    @classmethod
+    def get_data(cls, data_path):
+        ret_val = data_path
+        try:
+            ret_val = urlretrieve(data_path)[0]
+        except Exception:
+            try:
+                ret_val = urlretrieve("file:///" + data_path)[0]
+            except Exception:
+                pass
+            return ret_val
 
     @classmethod
     def clear_tables(cls, session):
