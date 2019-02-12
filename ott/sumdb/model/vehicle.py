@@ -11,10 +11,11 @@ log = logging.getLogger(__file__)
 
 
 class Vehicle(Base):
-    __tablename__ = 'rt_vehicles'
+    __tablename__ = 'vehicles'
 
     vehicle_id = Column(String, nullable=False)
     license_plate = Column(String)
+    fuel_type = Column(String)
 
     positions = relationship(
         'VehiclePosition',
@@ -37,62 +38,6 @@ class Vehicle(Base):
         VehiclePosition.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
         session.commit()
-
-    @classmethod
-    def parse_gtfsrt_feed(cls, session, agency, feed):
-        if feed and feed.entity and len(feed.entity) > 0:
-            VehiclePosition.clear_latest_column(session, agency)
-            super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
-
-    @classmethod
-    def parse_gtfsrt_record(cls, session, agency, record, timestamp):
-        """ create or update new Vehicles and positions
-            :return Vehicle object
-        """
-        ret_val = None
-        v = None
-
-        # step 1: query db for vehicle
-        try:
-            # step 1a: get inner 'vehicle' record
-            record = record.vehicle
-
-            # step 1b: see if this is an existing vehicle
-            q = session.query(Vehicle).filter(
-                and_(
-                    Vehicle.vehicle_id == record.vehicle.id,
-                    Vehicle.agency == agency,
-                )
-            )
-            v = q.first()
-        except Exception as err:
-            log.exception(err)
-
-        try:
-            # step 2: we didn't find an existing vehicle in the Vehicle table, so add a new one
-            if v is None:
-                v = Vehicle(agency, record.vehicle.id, record.vehicle.license_plate)
-                session.add(v)
-                session.commit()
-                session.flush()
-
-            # step 2b: set ret_val to our Vehicle (old or new)
-            ret_val = v
-
-            # step 3: update the position record if need be
-            v.update_position(session, agency, record)
-        except Exception as err:
-            log.exception(err)
-            session.rollback()
-        finally:
-            try:
-                session.commit()
-                session.flush()
-            except Exception as err:
-                log.exception(err)
-                session.rollback()
-
-        return ret_val
 
     def update_position(self, session, agency, data, time_span=144):
         """ query the db for a position for this vehicle ... if the vehicle appears to be parked in the

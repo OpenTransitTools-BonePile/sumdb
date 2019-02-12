@@ -17,7 +17,7 @@ class VehiclePosition(Base):
                    If you ever host this app, and want to host in another locale, you should refactor datetime.datetime.now()
                    so that date is UTC based, etc...
     """
-    __tablename__ = 'rt_vehicle_positions'
+    __tablename__ = 'vehicle_positions'
 
     latest  = Column(Integer, default=1)
 
