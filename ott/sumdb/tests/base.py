@@ -17,8 +17,10 @@ class TestBase(object):
 
     @classmethod
     def open_sqlite(cls):
-        url = db_utils.make_temp_sqlite_db_uri(cls.sql_db_name)
-        cls.db = Database(url=url)
+        if cls.db is None:
+            url = db_utils.make_temp_sqlite_db_uri(cls.sql_db_name)
+            cls.db = Database(url=url)
+            cls.db.create()
         return cls.db
 
     @classmethod

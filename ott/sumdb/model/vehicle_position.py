@@ -4,7 +4,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy import Column, Index, Integer, Numeric, String, Boolean, DateTime, ForeignKey, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 
-from ott.gtfsdb_realtime.model.base import Base
+from .base import Base
 
 
 class VehiclePosition(Base):
